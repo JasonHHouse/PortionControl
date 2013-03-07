@@ -18,6 +18,7 @@
  * Changed the code to use Android's CountDownTimer for more accurate clock
  * Fixed the back button then load from the notification error
  * 
+ * Revision v 0.3
  */
 
 package com.portioncontrolapp;
