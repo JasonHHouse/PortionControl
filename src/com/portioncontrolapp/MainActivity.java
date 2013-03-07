@@ -1,3 +1,24 @@
+/*
+ * File:        MainActivity.java
+ * Created:     3/6/2013
+ * Author:      Jason House
+ * Description: Have a motivational count down timer for people to wait 20 minutes after eating
+ * 
+ * This code is copyright (c) 2013 Jason House
+ *  
+ * History:
+ * Revision v 0.1
+ * 
+ * Basic app showing count down clock, some motivations and a button to start
+ * Used threading to wait and incremented seconds from that
+ * Have notifications to let users do other things
+ * 
+ * Revision v 0.2
+ * 
+ * Changed the code to use Android's CountDownTimer for more accurate clock
+ * 
+ */
+
 package com.portioncontrolapp;
 
 import java.text.DecimalFormat;
@@ -7,8 +28,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -22,17 +43,15 @@ public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity";
 	private static final int SECONDS = 59;
 
+	private int notifyID = 1;
 	private int intCurrentMinutes = 20;
 	private int intCurrentSeconds = 0;
-	private CountdownClock cc;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		cc = new CountdownClock();
 
 		Intent intent = getIntent();
 		if (intent.getExtras() != null) {
@@ -41,8 +60,6 @@ public class MainActivity extends Activity {
 			Log.i(TAG, "intCurrentMinutes: " + intCurrentMinutes);
 			Log.i(TAG, "intCurrentSeconds: " + intCurrentSeconds);
 
-			cc.cancel(true);
-			cc.execute();
 		}
 
 	}
@@ -56,42 +73,19 @@ public class MainActivity extends Activity {
 
 	public void onClick_finishedEating(View view) {
 		Log.d(TAG, "onClick_finishedEating()");
-		cc.execute();
+		startCountdown();
 	}
 
-	private class CountdownClock extends AsyncTask<Void, Void, String> {
-		Button countdown = (Button) findViewById(R.id.butFinishedEating);
-		int notifyID = 1;
+	private void startCountdown() {
+		Log.d(TAG, "startCountdown()");
+		intCurrentMinutes = 20;
+		intCurrentSeconds = 0;
+		((Button) findViewById(R.id.butFinishedEating)).setEnabled(false);
 
-		@Override
-		protected void onPostExecute(String result) {
-			runOnUiThread(new Runnable() {
-				public void run() {
-					countdown.setEnabled(true);
-				}
-			});
-		}
+		// 20 minutes
+		new CountDownTimer(1200000, 1000) {
 
-		@Override
-		protected void onPreExecute() {
-			runOnUiThread(new Runnable() {
-				public void run() {
-					countdown.setEnabled(false);
-				}
-			});
-		}
-
-		@Override
-		protected void onProgressUpdate(Void... values) {
-		}
-
-		@Override
-		protected String doInBackground(Void... params) {
-			Log.d(TAG, "startCountdown()");
-			intCurrentMinutes = 20;
-			intCurrentSeconds = 0;
-
-			while (intCurrentMinutes >= 0 && intCurrentSeconds >= 0) {
+			public void onTick(long millisUntilFinished) {
 				runOnUiThread(new Runnable() {
 					public void run() {
 						// Update the clock
@@ -176,7 +170,7 @@ public class MainActivity extends Activity {
 
 						mBuilder.setContentIntent(resultPendingIntent);
 						NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-						
+
 						mNotificationManager.notify(notifyID, mBuilder.build());
 
 					}
@@ -187,20 +181,19 @@ public class MainActivity extends Activity {
 					intCurrentSeconds = SECONDS;
 					intCurrentMinutes--;
 				}
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 			}
 
-			return null;
-		}
+			public void onFinish() {
+				((Button) findViewById(R.id.butFinishedEating))
+						.setEnabled(true);
+			}
+		}.start();
 
-		private String createOutput(int minutes, int seconds) {
-			DecimalFormat nft = new DecimalFormat("#00.###");
-			return nft.format(minutes) + ":" + nft.format(seconds);
-		}
 	}
+
+	private String createOutput(int minutes, int seconds) {
+		DecimalFormat nft = new DecimalFormat("#00.###");
+		return nft.format(minutes) + ":" + nft.format(seconds);
+	}
+
 }
