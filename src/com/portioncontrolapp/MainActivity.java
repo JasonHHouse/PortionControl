@@ -24,19 +24,27 @@ public class MainActivity extends Activity {
 
 	private int intCurrentMinutes = 20;
 	private int intCurrentSeconds = 0;
+	private CountdownClock cc;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
+		cc = new CountdownClock();
+
 		Intent intent = getIntent();
-		if(intent.getExtras() != null) {
+		if (intent.getExtras() != null) {
 			intCurrentMinutes = intent.getExtras().getInt("intCurrentMinutes");
 			intCurrentSeconds = intent.getExtras().getInt("intCurrentSeconds");
 			Log.i(TAG, "intCurrentMinutes: " + intCurrentMinutes);
 			Log.i(TAG, "intCurrentSeconds: " + intCurrentSeconds);
+
+			cc.cancel(true);
+			cc.execute();
 		}
+
 	}
 
 	@Override
@@ -48,7 +56,7 @@ public class MainActivity extends Activity {
 
 	public void onClick_finishedEating(View view) {
 		Log.d(TAG, "onClick_finishedEating()");
-		new CountdownClock().execute();
+		cc.execute();
 	}
 
 	private class CountdownClock extends AsyncTask<Void, Void, String> {
@@ -139,8 +147,6 @@ public class MainActivity extends Activity {
 							reinforcements.setText(R.string._blank);
 						}
 
-						// /if (intCurrentSeconds % 15 == 0) {
-
 						NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 								MainActivity.this)
 								.setSmallIcon(R.drawable.ic_launcher)
@@ -148,37 +154,31 @@ public class MainActivity extends Activity {
 								.setContentText(
 										createOutput(intCurrentMinutes,
 												intCurrentSeconds));
-						// Creates an explicit intent for an Activity in your
-						// app
+
 						Intent notificationIntent = new Intent(
 								MainActivity.this, MainActivity.class);
-						notificationIntent.putExtra("intCurrentMinutes", intCurrentMinutes);
-						notificationIntent.putExtra("intCurrentSeconds", intCurrentSeconds);
+						notificationIntent.putExtra("intCurrentMinutes",
+								intCurrentMinutes);
+						notificationIntent.putExtra("intCurrentSeconds",
+								intCurrentSeconds);
+						notificationIntent
+								.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+										| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-						// The stack builder object will contain an artificial
-						// back stack for the
-						// started Activity.
-						// This ensures that navigating backward from the
-						// Activity leads out of
-						// your application to the Home screen.
 						TaskStackBuilder stackBuilder = TaskStackBuilder
 								.create(MainActivity.this);
-						// Adds the back stack for the Intent (but not the
-						// Intent itself)
 						stackBuilder.addParentStack(MainActivity.class);
-						// Adds the Intent that starts the Activity to the top
-						// of the stack
 						stackBuilder.addNextIntent(notificationIntent);
-						PendingIntent resultPendingIntent = stackBuilder
-								.getPendingIntent(notifyID,
-										PendingIntent.FLAG_ONE_SHOT);
+
+						PendingIntent resultPendingIntent = PendingIntent
+								.getActivity(MainActivity.this, 0,
+										notificationIntent, 0);
 
 						mBuilder.setContentIntent(resultPendingIntent);
 						NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-						// mId allows you to update the notification later on.
+						
 						mNotificationManager.notify(notifyID, mBuilder.build());
 
-						// /}
 					}
 				});
 
