@@ -18,5 +18,7 @@
     <string name="minute_03">Don\'t Stop Now!</string>
     <string name="minute_01">Almost There!</string>
     <string name="finished">Finished!</string>
+    <string name="goAgain">Go Again?</string>
+    
 
 </resources>

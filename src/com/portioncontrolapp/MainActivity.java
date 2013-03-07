@@ -21,6 +21,13 @@
  * Revision v 0.3
  * 
  * Fixed the rotation reset issue
+ * Change color of fonts
+ * Rotate text
+ * Allow for reruns of app
+ * 
+ * Revision v 0.4
+ * 
+ * Removed button and added touch interface
  */
 
 package com.portioncontrolapp;
@@ -41,15 +48,15 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
 	private static final int SECONDS = 59;
-	private static final int MAX_ITERATIONS = 510; // Red, orange, yellow, to
-													// green
+	private static final int MAX_ITERATIONS = 510; 
+	// Red, orange, yellow, to green
 
 	private int notifyID = 1;
 	private int intCurrentMinutes;
@@ -100,12 +107,12 @@ public class MainActivity extends Activity {
 
 	public void onClick_finishedEating(View view) {
 		Log.d(TAG, "onClick_finishedEating()");
+		((RelativeLayout) findViewById(R.id.rlMainActivity)).setEnabled(false);
 		startCountdown();
 	}
 
 	private void startCountdown() {
 		Log.d(TAG, "startCountdown()");
-		((Button) findViewById(R.id.butFinishedEating)).setEnabled(false);
 
 		if (cdt != null) {
 			cdt.cancel();
@@ -234,52 +241,45 @@ public class MainActivity extends Activity {
 					intCurrentSeconds = SECONDS;
 					intCurrentMinutes--;
 				}
-				// Log.i(TAG, createOutput(intCurrentMinutes,
-				// intCurrentSeconds));
+
 			}
 
 			public void onFinish() {
 				intCurrentSeconds = 0;
 				intCurrentMinutes = 1;
-				
-				((Button) findViewById(R.id.butFinishedEating))
-						.setEnabled(true);
-				TextView countdown = (TextView) findViewById(R.id.txtCountdown);
-				TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
-				countdown.setText(R.string.timeZero);
-				countdown.setTextColor(Color.BLACK);
-				reinforcements.setRotation(0);
-				reinforcements.setText(R.string.finished);
-				
-				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-						MainActivity.this)
-						.setSmallIcon(R.drawable.ic_launcher)
-						.setContentTitle("Finished")
-						.setContentText(
-								createOutput(0,
-										0));
 
-				Intent notificationIntent = new Intent(
-						MainActivity.this, MainActivity.class);
+				TextView countdown = (TextView) findViewById(R.id.txtCountdown);
+				countdown.setText(R.string.finished);
+				countdown.setTextColor(Color.BLACK);
+				
+				TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
+				reinforcements.setRotation(0);
+				reinforcements.setText(R.string.goAgain);
+				
+				((RelativeLayout) findViewById(R.id.rlMainActivity)).setEnabled(true);
+
+				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+						MainActivity.this).setSmallIcon(R.drawable.ic_launcher)
+						.setContentTitle("Finished")
+						.setContentText(createOutput(0, 0));
+
+				Intent notificationIntent = new Intent(MainActivity.this,
+						MainActivity.class);
 				notificationIntent.removeExtra("intCurrentMinutes");
 				notificationIntent.removeExtra("intCurrentSeconds");
-				notificationIntent.putExtra("intCurrentMinutes",
-						1);
-				notificationIntent.putExtra("intCurrentSeconds",
-						0);
-				notificationIntent
-						.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-								| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				notificationIntent.putExtra("intCurrentMinutes", 1);
+				notificationIntent.putExtra("intCurrentSeconds", 0);
+				notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+						| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
 				TaskStackBuilder stackBuilder = TaskStackBuilder
 						.create(MainActivity.this);
 				stackBuilder.addParentStack(MainActivity.class);
 				stackBuilder.addNextIntent(notificationIntent);
 
-				PendingIntent resultPendingIntent = PendingIntent
-						.getActivity(MainActivity.this, 0,
-								notificationIntent,
-								PendingIntent.FLAG_UPDATE_CURRENT);
+				PendingIntent resultPendingIntent = PendingIntent.getActivity(
+						MainActivity.this, 0, notificationIntent,
+						PendingIntent.FLAG_UPDATE_CURRENT);
 
 				mBuilder.setContentIntent(resultPendingIntent);
 				NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
