@@ -19,6 +19,8 @@
  * Fixed the back button then load from the notification error
  * 
  * Revision v 0.3
+ * 
+ * Fixed the rotation reset issue
  */
 
 package com.portioncontrolapp;
