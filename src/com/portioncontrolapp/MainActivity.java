@@ -26,12 +26,14 @@
 package com.portioncontrolapp;
 
 import java.text.DecimalFormat;
+import java.util.Random;
 
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.NotificationCompat;
@@ -46,11 +48,19 @@ public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
 	private static final int SECONDS = 59;
+	private static final int MAX_ITERATIONS = 510; // Red, orange, yellow, to
+													// green
 
 	private int notifyID = 1;
 	private int intCurrentMinutes;
 	private int intCurrentSeconds;
 	private CountDownTimer cdt;
+	private int red = 255;
+	private int green = 0;
+	private int blue = 0;
+	private int deltaValue;
+	private Random rand;
+	private int rotation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +68,17 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		intCurrentMinutes = 20;
+		intCurrentMinutes = 1;
 		intCurrentSeconds = 0;
+		rand = new Random();
+		rotation = rand.nextInt(20) - 10;
+		deltaValue = MAX_ITERATIONS
+				/ (intCurrentMinutes * 60 + intCurrentSeconds);
+		Log.i(TAG, "deltaValue: " + deltaValue);
+
+		red = 255;
+		green = 0;
+		blue = 0;
 
 		Intent intent = getIntent();
 		if (intent.getExtras() != null) {
@@ -88,22 +107,34 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "startCountdown()");
 		((Button) findViewById(R.id.butFinishedEating)).setEnabled(false);
 
-		if(cdt != null) {
+		if (cdt != null) {
 			cdt.cancel();
 			cdt = null;
 		}
-		
+
 		// 20 minutes
-		cdt = new CountDownTimer((intCurrentMinutes * 60 + intCurrentSeconds) * 1000,
-				1000) {
+		cdt = new CountDownTimer(
+				(intCurrentMinutes * 60 + intCurrentSeconds) * 1000, 1000) {
 
 			public void onTick(long millisUntilFinished) {
+
+				if (intCurrentSeconds == 0)
+					rotation = rand.nextInt(20) - 10;
+
+				if (green >= 255) {
+					green = 255;
+					red -= deltaValue;
+				} else {
+					green += deltaValue;
+				}
+
 				runOnUiThread(new Runnable() {
 					public void run() {
 						// Update the clock
 						TextView countdown = (TextView) findViewById(R.id.txtCountdown);
 						countdown.setText(createOutput(intCurrentMinutes,
 								intCurrentSeconds));
+						countdown.setTextColor(Color.rgb(red, green, blue));
 
 						// Update the reinforcement text
 						TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
@@ -111,46 +142,53 @@ public class MainActivity extends Activity {
 						case 19:
 						case 18:
 							reinforcements.setText(R.string.minute_19);
+							reinforcements.setRotation(rotation);
 							break;
 						case 17:
 						case 16:
 							reinforcements.setText(R.string.minute_17);
+							reinforcements.setRotation(rotation);
 							break;
 						case 15:
 						case 14:
 							reinforcements.setText(R.string.minute_15);
+							reinforcements.setRotation(rotation);
 							break;
 						case 13:
 						case 12:
 							reinforcements.setText(R.string.minute_13);
+							reinforcements.setRotation(rotation);
 							break;
 						case 11:
 						case 10:
 							reinforcements.setText(R.string.minute_11);
+							reinforcements.setRotation(rotation);
 							break;
 						case 9:
 						case 8:
 							reinforcements.setText(R.string.minute_09);
+							reinforcements.setRotation(rotation);
 							break;
 						case 7:
 						case 6:
 							reinforcements.setText(R.string.minute_07);
+							reinforcements.setRotation(rotation);
 							break;
 						case 5:
 						case 4:
 							reinforcements.setText(R.string.minute_05);
+							reinforcements.setRotation(rotation);
 							break;
 						case 3:
 						case 2:
 							reinforcements.setText(R.string.minute_03);
+							reinforcements.setRotation(rotation);
 							break;
 						case 1:
 						case 0:
 							reinforcements.setText(R.string.minute_01);
+							reinforcements.setRotation(rotation);
 							break;
-						default:
-							countdown.setText(R.string.timeZero);
-							reinforcements.setText(R.string._blank);
 						}
 
 						NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
@@ -180,7 +218,8 @@ public class MainActivity extends Activity {
 
 						PendingIntent resultPendingIntent = PendingIntent
 								.getActivity(MainActivity.this, 0,
-										notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+										notificationIntent,
+										PendingIntent.FLAG_UPDATE_CURRENT);
 
 						mBuilder.setContentIntent(resultPendingIntent);
 						NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -195,12 +234,57 @@ public class MainActivity extends Activity {
 					intCurrentSeconds = SECONDS;
 					intCurrentMinutes--;
 				}
-				//Log.i(TAG, createOutput(intCurrentMinutes, intCurrentSeconds));
+				// Log.i(TAG, createOutput(intCurrentMinutes,
+				// intCurrentSeconds));
 			}
 
 			public void onFinish() {
+				intCurrentSeconds = 0;
+				intCurrentMinutes = 1;
+				
 				((Button) findViewById(R.id.butFinishedEating))
 						.setEnabled(true);
+				TextView countdown = (TextView) findViewById(R.id.txtCountdown);
+				TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
+				countdown.setText(R.string.timeZero);
+				countdown.setTextColor(Color.BLACK);
+				reinforcements.setRotation(0);
+				reinforcements.setText(R.string.finished);
+				
+				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+						MainActivity.this)
+						.setSmallIcon(R.drawable.ic_launcher)
+						.setContentTitle("Finished")
+						.setContentText(
+								createOutput(0,
+										0));
+
+				Intent notificationIntent = new Intent(
+						MainActivity.this, MainActivity.class);
+				notificationIntent.removeExtra("intCurrentMinutes");
+				notificationIntent.removeExtra("intCurrentSeconds");
+				notificationIntent.putExtra("intCurrentMinutes",
+						1);
+				notificationIntent.putExtra("intCurrentSeconds",
+						0);
+				notificationIntent
+						.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+								| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+				TaskStackBuilder stackBuilder = TaskStackBuilder
+						.create(MainActivity.this);
+				stackBuilder.addParentStack(MainActivity.class);
+				stackBuilder.addNextIntent(notificationIntent);
+
+				PendingIntent resultPendingIntent = PendingIntent
+						.getActivity(MainActivity.this, 0,
+								notificationIntent,
+								PendingIntent.FLAG_UPDATE_CURRENT);
+
+				mBuilder.setContentIntent(resultPendingIntent);
+				NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+				mNotificationManager.notify(notifyID, mBuilder.build());
 			}
 		}.start();
 
