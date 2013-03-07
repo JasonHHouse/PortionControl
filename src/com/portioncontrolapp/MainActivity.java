@@ -16,6 +16,7 @@
  * Revision v 0.2
  * 
  * Changed the code to use Android's CountDownTimer for more accurate clock
+ * Fixed the back button then load from the notification error
  * 
  */
 
@@ -44,8 +45,9 @@ public class MainActivity extends Activity {
 	private static final int SECONDS = 59;
 
 	private int notifyID = 1;
-	private int intCurrentMinutes = 20;
-	private int intCurrentSeconds = 0;
+	private int intCurrentMinutes;
+	private int intCurrentSeconds;
+	private CountDownTimer cdt;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +55,16 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		intCurrentMinutes = 20;
+		intCurrentSeconds = 0;
+
 		Intent intent = getIntent();
 		if (intent.getExtras() != null) {
 			intCurrentMinutes = intent.getExtras().getInt("intCurrentMinutes");
 			intCurrentSeconds = intent.getExtras().getInt("intCurrentSeconds");
 			Log.i(TAG, "intCurrentMinutes: " + intCurrentMinutes);
 			Log.i(TAG, "intCurrentSeconds: " + intCurrentSeconds);
-
+			startCountdown();
 		}
 
 	}
@@ -78,12 +83,16 @@ public class MainActivity extends Activity {
 
 	private void startCountdown() {
 		Log.d(TAG, "startCountdown()");
-		intCurrentMinutes = 20;
-		intCurrentSeconds = 0;
 		((Button) findViewById(R.id.butFinishedEating)).setEnabled(false);
 
+		if(cdt != null) {
+			cdt.cancel();
+			cdt = null;
+		}
+		
 		// 20 minutes
-		new CountDownTimer(1200000, 1000) {
+		cdt = new CountDownTimer((intCurrentMinutes * 60 + intCurrentSeconds) * 1000,
+				1000) {
 
 			public void onTick(long millisUntilFinished) {
 				runOnUiThread(new Runnable() {
@@ -151,6 +160,8 @@ public class MainActivity extends Activity {
 
 						Intent notificationIntent = new Intent(
 								MainActivity.this, MainActivity.class);
+						notificationIntent.removeExtra("intCurrentMinutes");
+						notificationIntent.removeExtra("intCurrentSeconds");
 						notificationIntent.putExtra("intCurrentMinutes",
 								intCurrentMinutes);
 						notificationIntent.putExtra("intCurrentSeconds",
@@ -166,7 +177,7 @@ public class MainActivity extends Activity {
 
 						PendingIntent resultPendingIntent = PendingIntent
 								.getActivity(MainActivity.this, 0,
-										notificationIntent, 0);
+										notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 						mBuilder.setContentIntent(resultPendingIntent);
 						NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -181,6 +192,7 @@ public class MainActivity extends Activity {
 					intCurrentSeconds = SECONDS;
 					intCurrentMinutes--;
 				}
+				//Log.i(TAG, createOutput(intCurrentMinutes, intCurrentSeconds));
 			}
 
 			public void onFinish() {
