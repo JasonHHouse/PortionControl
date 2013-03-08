@@ -28,6 +28,8 @@
  * Revision v 0.4
  * 
  * Removed button and added touch interface
+ * Added static int's for default times
+ * Added random colors to fonts
  */
 
 package com.portioncontrolapp;
@@ -54,20 +56,22 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
-	private static final int SECONDS = 59;
-	private static final int MAX_ITERATIONS = 510; 
-	// Red, orange, yellow, to green
+	private static final int MAX_ITERATIONS = 510;
+	private static final int START_MINUTES = 0;
+	private static final int START_SECONDS = 59;
 
 	private int notifyID = 1;
 	private int intCurrentMinutes;
 	private int intCurrentSeconds;
-	private CountDownTimer cdt;
-	private int red = 255;
-	private int green = 0;
-	private int blue = 0;
-	private int deltaValue;
-	private Random rand;
+	private double red;
+	private double green;
+	private double blue;
+	private double deltaValue;
 	private int rotation;
+	private int color;
+	private int size;
+	private CountDownTimer cdt;
+	private Random rand;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +79,13 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		intCurrentMinutes = 1;
-		intCurrentSeconds = 0;
+		intCurrentMinutes = START_MINUTES;
+		intCurrentSeconds = START_SECONDS;
 		rand = new Random();
 		rotation = rand.nextInt(20) - 10;
-		deltaValue = MAX_ITERATIONS
+		color = rand.nextInt(10);
+		size = rand.nextInt(20) + 40;
+		deltaValue = (double) MAX_ITERATIONS
 				/ (intCurrentMinutes * 60 + intCurrentSeconds);
 		Log.i(TAG, "deltaValue: " + deltaValue);
 
@@ -91,8 +97,14 @@ public class MainActivity extends Activity {
 		if (intent.getExtras() != null) {
 			intCurrentMinutes = intent.getExtras().getInt("intCurrentMinutes");
 			intCurrentSeconds = intent.getExtras().getInt("intCurrentSeconds");
+			red = intent.getExtras().getDouble("red");
+			green = intent.getExtras().getDouble("green");
+			blue = intent.getExtras().getDouble("blue");
 			Log.i(TAG, "intCurrentMinutes: " + intCurrentMinutes);
 			Log.i(TAG, "intCurrentSeconds: " + intCurrentSeconds);
+			Log.i(TAG, "red: " + red);
+			Log.i(TAG, "green: " + green);
+			Log.i(TAG, "blue: " + blue);
 			startCountdown();
 		}
 
@@ -125,15 +137,22 @@ public class MainActivity extends Activity {
 
 			public void onTick(long millisUntilFinished) {
 
-				if (intCurrentSeconds == 0)
+				if (intCurrentSeconds == 59) { 
 					rotation = rand.nextInt(20) - 10;
+					color = rand.nextInt(10);
+					size = rand.nextInt(20) + 40;
+				}
 
-				if (green >= 255) {
+				if(0 < 255 - (green + deltaValue)) {
+					green += deltaValue;
+				} else {
 					green = 255;
 					red -= deltaValue;
-				} else {
-					green += deltaValue;
 				}
+				
+				Log.i(TAG, "Time: " + createOutput(intCurrentMinutes,
+								intCurrentSeconds) + ", RGB: " + red + ", " + green + ", " + blue);
+				
 
 				runOnUiThread(new Runnable() {
 					public void run() {
@@ -141,62 +160,15 @@ public class MainActivity extends Activity {
 						TextView countdown = (TextView) findViewById(R.id.txtCountdown);
 						countdown.setText(createOutput(intCurrentMinutes,
 								intCurrentSeconds));
-						countdown.setTextColor(Color.rgb(red, green, blue));
+						countdown.setTextColor(Color.rgb((int) red,
+								(int) green, (int) blue));
 
 						// Update the reinforcement text
 						TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
-						switch (intCurrentMinutes) {
-						case 19:
-						case 18:
-							reinforcements.setText(R.string.minute_19);
-							reinforcements.setRotation(rotation);
-							break;
-						case 17:
-						case 16:
-							reinforcements.setText(R.string.minute_17);
-							reinforcements.setRotation(rotation);
-							break;
-						case 15:
-						case 14:
-							reinforcements.setText(R.string.minute_15);
-							reinforcements.setRotation(rotation);
-							break;
-						case 13:
-						case 12:
-							reinforcements.setText(R.string.minute_13);
-							reinforcements.setRotation(rotation);
-							break;
-						case 11:
-						case 10:
-							reinforcements.setText(R.string.minute_11);
-							reinforcements.setRotation(rotation);
-							break;
-						case 9:
-						case 8:
-							reinforcements.setText(R.string.minute_09);
-							reinforcements.setRotation(rotation);
-							break;
-						case 7:
-						case 6:
-							reinforcements.setText(R.string.minute_07);
-							reinforcements.setRotation(rotation);
-							break;
-						case 5:
-						case 4:
-							reinforcements.setText(R.string.minute_05);
-							reinforcements.setRotation(rotation);
-							break;
-						case 3:
-						case 2:
-							reinforcements.setText(R.string.minute_03);
-							reinforcements.setRotation(rotation);
-							break;
-						case 1:
-						case 0:
-							reinforcements.setText(R.string.minute_01);
-							reinforcements.setRotation(rotation);
-							break;
-						}
+						setNotificationText(reinforcements);
+						reinforcements.setRotation(rotation);
+						reinforcements.setTextColor(getColor(color));
+						reinforcements.setTextSize(size);
 
 						NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 								MainActivity.this)
@@ -210,10 +182,16 @@ public class MainActivity extends Activity {
 								MainActivity.this, MainActivity.class);
 						notificationIntent.removeExtra("intCurrentMinutes");
 						notificationIntent.removeExtra("intCurrentSeconds");
+						notificationIntent.removeExtra("red");
+						notificationIntent.removeExtra("green");
+						notificationIntent.removeExtra("blue");
 						notificationIntent.putExtra("intCurrentMinutes",
 								intCurrentMinutes);
 						notificationIntent.putExtra("intCurrentSeconds",
 								intCurrentSeconds);
+						notificationIntent.putExtra("red", red);
+						notificationIntent.putExtra("green", green);
+						notificationIntent.putExtra("blue", blue);
 						notificationIntent
 								.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 										| Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -238,37 +216,49 @@ public class MainActivity extends Activity {
 
 				intCurrentSeconds--;
 				if (intCurrentSeconds < 0) {
-					intCurrentSeconds = SECONDS;
+					intCurrentSeconds = START_SECONDS;
 					intCurrentMinutes--;
 				}
 
 			}
 
 			public void onFinish() {
-				intCurrentSeconds = 0;
-				intCurrentMinutes = 1;
+				//Reset the values
+				intCurrentMinutes = START_MINUTES;
+				intCurrentSeconds = START_SECONDS;
 
+				red = 255;
+				green = 0;
+				blue = 0;
+				
 				TextView countdown = (TextView) findViewById(R.id.txtCountdown);
 				countdown.setText(R.string.finished);
 				countdown.setTextColor(Color.BLACK);
-				
+
 				TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
 				reinforcements.setRotation(0);
+				reinforcements.setTextColor(Color.BLACK);
 				reinforcements.setText(R.string.goAgain);
-				
-				((RelativeLayout) findViewById(R.id.rlMainActivity)).setEnabled(true);
+
+				((RelativeLayout) findViewById(R.id.rlMainActivity))
+						.setEnabled(true);
 
 				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 						MainActivity.this).setSmallIcon(R.drawable.ic_launcher)
-						.setContentTitle("Finished")
+						.setContentTitle(getString(R.string.finished))
 						.setContentText(createOutput(0, 0));
 
 				Intent notificationIntent = new Intent(MainActivity.this,
 						MainActivity.class);
 				notificationIntent.removeExtra("intCurrentMinutes");
 				notificationIntent.removeExtra("intCurrentSeconds");
-				notificationIntent.putExtra("intCurrentMinutes", 1);
-				notificationIntent.putExtra("intCurrentSeconds", 0);
+				notificationIntent.removeExtra("red");
+				notificationIntent.removeExtra("green");
+				notificationIntent.removeExtra("blue");
+				// notificationIntent.putExtra("intCurrentMinutes",
+				// START_MINUTES);
+				// notificationIntent.putExtra("intCurrentSeconds",
+				// START_SECONDS);
 				notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 						| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
@@ -290,9 +280,81 @@ public class MainActivity extends Activity {
 
 	}
 
+	private void setNotificationText(TextView reinforcements) {
+		switch (intCurrentMinutes) {
+		case 20:
+		case 19:
+		case 18:
+			reinforcements.setText(R.string.minute_19);
+			break;
+		case 17:
+		case 16:
+			reinforcements.setText(R.string.minute_17);
+			break;
+		case 15:
+		case 14:
+			reinforcements.setText(R.string.minute_15);
+			break;
+		case 13:
+		case 12:
+			reinforcements.setText(R.string.minute_13);
+			break;
+		case 11:
+		case 10:
+			reinforcements.setText(R.string.minute_11);
+			break;
+		case 9:
+		case 8:
+			reinforcements.setText(R.string.minute_09);
+			break;
+		case 7:
+		case 6:
+			reinforcements.setText(R.string.minute_07);
+			break;
+		case 5:
+		case 4:
+			reinforcements.setText(R.string.minute_05);
+			break;
+		case 3:
+		case 2:
+			reinforcements.setText(R.string.minute_03);
+			break;
+		case 1:
+		case 0:
+			reinforcements.setText(R.string.minute_01);
+			break;
+		}
+
+	}
+
 	private String createOutput(int minutes, int seconds) {
 		DecimalFormat nft = new DecimalFormat("#00.###");
 		return nft.format(minutes) + ":" + nft.format(seconds);
 	}
 
+	private int getColor(int rand) {
+		switch (rand) {
+		case 0:
+			return Color.BLACK;
+		case 1:
+			return Color.BLUE;
+		case 2:
+			return Color.CYAN;
+		case 3:
+			return Color.DKGRAY;
+		case 4:
+			return Color.GRAY;
+		case 5:
+			return Color.GREEN;
+		case 6:
+			return Color.LTGRAY;
+		case 7:
+			return Color.MAGENTA;
+		case 9:
+			return Color.RED;
+		default:
+			// Orange
+			return Color.rgb(255, 127, 0);
+		}
+	}
 }
