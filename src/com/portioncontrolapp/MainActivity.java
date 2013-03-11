@@ -57,8 +57,9 @@ public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
 	private static final int MAX_ITERATIONS = 510;
-	private static final int START_MINUTES = 0;
-	private static final int START_SECONDS = 59;
+	private static final int START_MINUTES = 20;
+	private static final int START_SECONDS = 0;
+	private static final int SECONDS = 59;
 
 	private int notifyID = 1;
 	private int intCurrentMinutes;
@@ -216,7 +217,7 @@ public class MainActivity extends Activity {
 
 				intCurrentSeconds--;
 				if (intCurrentSeconds < 0) {
-					intCurrentSeconds = START_SECONDS;
+					intCurrentSeconds = SECONDS;
 					intCurrentMinutes--;
 				}
 
