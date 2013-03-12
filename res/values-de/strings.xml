@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Teil Steuern</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="finishedEating">Essen fertig?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">Nicht Mehr Lange!</string>
+    <string name="minute_17">Halten Sie sich die gute Arbeit!</string>
+    <string name="minute_15">15 Minuten übrig</string>
+    <string name="minute_13">Hervorragende Arbeit!</string>
+    <string name="minute_11">11 Minuten übrig</string>
+    <string name="minute_09">Es Wird Sich Auszahlen</string>
+    <string name="minute_07">Gute Arbeit!</string>
+    <string name="minute_05">5 Minuten übrig</string>
+    <string name="minute_03">Nicht Stoppen Jetzt!</string>
+    <string name="minute_01">Fast Da!</string>
+    <string name="finished">fertig!</string>
+    <string name="goAgain">Gehen Wieder?</string>
+    
+
+</resources>

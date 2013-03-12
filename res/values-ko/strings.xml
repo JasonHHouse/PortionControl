@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">부분 제어</string>
+    <string name="menu_settings">설정</string>
+    <string name="finishedEating">식사 완료?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">이제 머지 않았어!</string>
+    <string name="minute_17">좋은 일을 계속!</string>
+    <string name="minute_15">15 분 왼쪽</string>
+    <string name="minute_13">훌륭한 일!</string>
+    <string name="minute_11">왼쪽 11 분</string>
+    <string name="minute_09">그것은 곧 돈을 지불 할거다!</string>
+    <string name="minute_07">좋은 일!</string>
+    <string name="minute_05">5 분 왼쪽</string>
+    <string name="minute_03">지금 멈추지 마!</string>
+    <string name="minute_01">거의가!</string>
+    <string name="finished">완전한!</string>
+    <string name="goAgain">다시 이동?</string>
+    
+
+</resources>

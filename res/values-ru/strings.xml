@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">порционная</string>
+    <string name="menu_settings">настройки</string>
+    <string name="finishedEating">Готовые питание?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">Не долго сейчас!</string>
+    <string name="minute_17">Следите за хорошую работу!</string>
+    <string name="minute_15">15 минут осталось</string>
+    <string name="minute_13">Отлично работы!</string>
+    <string name="minute_11">11 минут осталось</string>
+    <string name="minute_09">Это будет окупаться скоро!</string>
+    <string name="minute_07">Хорошая работа!</string>
+    <string name="minute_05">5 минут осталось</string>
+    <string name="minute_03">Не останавливайся!</string>
+    <string name="minute_01">Почти Там!</string>
+    <string name="finished">законченный!</string>
+    <string name="goAgain">Перейти раз?</string>
+    
+
+</resources>

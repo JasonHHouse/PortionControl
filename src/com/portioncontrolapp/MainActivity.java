@@ -77,6 +77,8 @@ public class MainActivity extends Activity {
 	private int size;
 	private CountDownTimer cdt;
 	private Random rand;
+	private NotificationManager mNotificationManager;
+	private boolean isRunning;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		intCurrentMinutes = START_MINUTES;
 		intCurrentSeconds = START_SECONDS;
 		rand = new Random();
@@ -93,7 +96,7 @@ public class MainActivity extends Activity {
 		deltaValue = (double) MAX_ITERATIONS
 				/ (intCurrentMinutes * 60 + intCurrentSeconds);
 		Log.i(TAG, "deltaValue: " + deltaValue);
-
+		isRunning = false;
 		red = 255;
 		green = 0;
 		blue = 0;
@@ -105,20 +108,35 @@ public class MainActivity extends Activity {
 			red = intent.getExtras().getDouble("red");
 			green = intent.getExtras().getDouble("green");
 			blue = intent.getExtras().getDouble("blue");
+			isRunning = intent.getExtras().getBoolean("isRunning");
 			Log.i(TAG, "intCurrentMinutes: " + intCurrentMinutes);
 			Log.i(TAG, "intCurrentSeconds: " + intCurrentSeconds);
 			Log.i(TAG, "red: " + red);
 			Log.i(TAG, "green: " + green);
 			Log.i(TAG, "blue: " + blue);
+			Log.i(TAG, "isRunning: " + isRunning);
 			startCountdown();
 		}
 
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		Log.d(TAG, "onSaveInstanceState()");
+		// savedInstanceState.putDouble("red", red);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		Log.d(TAG, "onRestoreInstanceState()"); 
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		// getMenuInflater().inflate(R.menu.activity_main, menu);
+		//getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
@@ -132,164 +150,145 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "startCountdown()");
 
 		if (cdt != null) {
+			Log.i(TAG, "cdt is not null");
 			cdt.cancel();
 			cdt = null;
 		}
 
-		// 20 minutes
-		cdt = new CountDownTimer(
-				(intCurrentMinutes * 60 + intCurrentSeconds) * 1000, 1000) {
+		if (!isRunning) {
 
-			public void onTick(long millisUntilFinished) {
+			// 20 minutes
+			cdt = new CountDownTimer(
+					(intCurrentMinutes * 60 + intCurrentSeconds) * 1000, 1000) {
 
-				if (intCurrentSeconds == 59) { 
-					rotation = rand.nextInt(20) - 10;
-					color = rand.nextInt(10);
-					size = rand.nextInt(20) + 40;
-				}
+				public void onTick(long millisUntilFinished) {
+					isRunning = true;
 
-				if(0 < 255 - (green + deltaValue)) {
-					green += deltaValue;
-				} else {
-					green = 255;
-					red -= deltaValue;
-				}
-				
-				Log.i(TAG, "Time: " + createOutput(intCurrentMinutes,
-								intCurrentSeconds) + ", RGB: " + red + ", " + green + ", " + blue);
-				
-
-				runOnUiThread(new Runnable() {
-					public void run() {
-						// Update the clock
-						TextView countdown = (TextView) findViewById(R.id.txtCountdown);
-						countdown.setText(createOutput(intCurrentMinutes,
-								intCurrentSeconds));
-						countdown.setTextColor(Color.rgb((int) red,
-								(int) green, (int) blue));
-
-						// Update the reinforcement text
-						TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
-						setNotificationText(reinforcements);
-						reinforcements.setRotation(rotation);
-						reinforcements.setTextColor(getColor(color));
-						reinforcements.setTextSize(size);
-
-						NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-								MainActivity.this)
-								.setSmallIcon(R.drawable.ic_launcher)
-								.setContentTitle("Time left")
-								.setContentText(
-										createOutput(intCurrentMinutes,
-												intCurrentSeconds));
-
-						Intent notificationIntent = new Intent(
-								MainActivity.this, MainActivity.class);
-						notificationIntent.removeExtra("intCurrentMinutes");
-						notificationIntent.removeExtra("intCurrentSeconds");
-						notificationIntent.removeExtra("red");
-						notificationIntent.removeExtra("green");
-						notificationIntent.removeExtra("blue");
-						notificationIntent.putExtra("intCurrentMinutes",
-								intCurrentMinutes);
-						notificationIntent.putExtra("intCurrentSeconds",
-								intCurrentSeconds);
-						notificationIntent.putExtra("red", red);
-						notificationIntent.putExtra("green", green);
-						notificationIntent.putExtra("blue", blue);
-						notificationIntent
-								.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-										| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-						TaskStackBuilder stackBuilder = TaskStackBuilder
-								.create(MainActivity.this);
-						stackBuilder.addParentStack(MainActivity.class);
-						stackBuilder.addNextIntent(notificationIntent);
-
-						PendingIntent resultPendingIntent = PendingIntent
-								.getActivity(MainActivity.this, 0,
-										notificationIntent,
-										PendingIntent.FLAG_UPDATE_CURRENT);
-
-						mBuilder.setContentIntent(resultPendingIntent);
-						NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-						mNotificationManager.notify(notifyID, mBuilder.build());
-
+					if (intCurrentSeconds == 59) {
+						rotation = rand.nextInt(20) - 10;
+						color = rand.nextInt(10);
+						size = rand.nextInt(20) + 40;
 					}
-				});
 
-				intCurrentSeconds--;
-				if (intCurrentSeconds < 0) {
-					intCurrentSeconds = SECONDS;
-					intCurrentMinutes--;
+					if (0 < 255 - (green + deltaValue)) {
+						green += deltaValue;
+					} else {
+						green = 255;
+						red -= deltaValue;
+					}
+
+					// Log.i(TAG,
+					// "Time: "
+					// + createOutput(intCurrentMinutes,
+					// intCurrentSeconds) + ", RGB: " + red
+					// + ", " + green + ", " + blue);
+
+					// runOnUiThread(new Runnable() {
+					// public void run() {
+					// Update the clock
+					TextView countdown = (TextView) findViewById(R.id.txtCountdown);
+					countdown.setText(createOutput(intCurrentMinutes,
+							intCurrentSeconds));
+					countdown.setTextColor(Color.rgb((int) red, (int) green,
+							(int) blue));
+
+					// Update the reinforcement text
+					TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
+					setNotificationText(reinforcements);
+					reinforcements.setRotation(rotation);
+					reinforcements.setTextColor(getColor(color));
+					reinforcements.setTextSize(size);
+
+					NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+							MainActivity.this)
+							.setSmallIcon(R.drawable.ic_launcher)
+							.setContentTitle("Time left")
+							.setContentText(
+									createOutput(intCurrentMinutes,
+											intCurrentSeconds));
+
+					Intent notificationIntent = getNotificationIntent(true);
+
+					TaskStackBuilder stackBuilder = TaskStackBuilder
+							.create(MainActivity.this);
+					stackBuilder.addParentStack(MainActivity.class);
+					stackBuilder.addNextIntent(notificationIntent);
+
+					PendingIntent resultPendingIntent = PendingIntent
+							.getActivity(MainActivity.this, 0,
+									notificationIntent,
+									PendingIntent.FLAG_UPDATE_CURRENT);
+
+					mBuilder.setContentIntent(resultPendingIntent);
+
+					mNotificationManager.notify(notifyID, mBuilder.build());
+
+					// }
+					// });
+
+					intCurrentSeconds--;
+					if (intCurrentSeconds < 0) {
+						intCurrentSeconds = SECONDS;
+						intCurrentMinutes--;
+					}
+
 				}
 
-			}
+				public void onFinish() {
+					// Reset the values
+					intCurrentMinutes = START_MINUTES;
+					intCurrentSeconds = START_SECONDS;
+					red = 255;
+					green = 0;
+					blue = 0;
+					isRunning = false;
 
-			public void onFinish() {
-				//Reset the values
-				intCurrentMinutes = START_MINUTES;
-				intCurrentSeconds = START_SECONDS;
+					TextView countdown = (TextView) findViewById(R.id.txtCountdown);
+					countdown.setText(R.string.finished);
+					countdown.setTextColor(Color.BLACK);
 
-				red = 255;
-				green = 0;
-				blue = 0;
-				
-				TextView countdown = (TextView) findViewById(R.id.txtCountdown);
-				countdown.setText(R.string.finished);
-				countdown.setTextColor(Color.BLACK);
+					TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
+					reinforcements.setRotation(0);
+					reinforcements.setTextColor(Color.BLACK);
+					reinforcements.setText(R.string.goAgain);
 
-				TextView reinforcements = (TextView) findViewById(R.id.txtReinforcements);
-				reinforcements.setRotation(0);
-				reinforcements.setTextColor(Color.BLACK);
-				reinforcements.setText(R.string.goAgain);
+					((RelativeLayout) findViewById(R.id.rlMainActivity))
+							.setEnabled(true);
 
-				((RelativeLayout) findViewById(R.id.rlMainActivity))
-						.setEnabled(true);
+					NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+							MainActivity.this)
+							.setSmallIcon(R.drawable.ic_launcher)
+							.setContentTitle(getString(R.string.finished))
+							.setContentText(createOutput(0, 0));
 
-				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-						MainActivity.this).setSmallIcon(R.drawable.ic_launcher)
-						.setContentTitle(getString(R.string.finished))
-						.setContentText(createOutput(0, 0));
+					Intent notificationIntent = getNotificationIntent(false);
 
-				Intent notificationIntent = new Intent(MainActivity.this,
-						MainActivity.class);
-				notificationIntent.removeExtra("intCurrentMinutes");
-				notificationIntent.removeExtra("intCurrentSeconds");
-				notificationIntent.removeExtra("red");
-				notificationIntent.removeExtra("green");
-				notificationIntent.removeExtra("blue");
-				// notificationIntent.putExtra("intCurrentMinutes",
-				// START_MINUTES);
-				// notificationIntent.putExtra("intCurrentSeconds",
-				// START_SECONDS);
-				notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-						| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					TaskStackBuilder stackBuilder = TaskStackBuilder
+							.create(MainActivity.this);
+					stackBuilder.addParentStack(MainActivity.class);
+					stackBuilder.addNextIntent(notificationIntent);
 
-				TaskStackBuilder stackBuilder = TaskStackBuilder
-						.create(MainActivity.this);
-				stackBuilder.addParentStack(MainActivity.class);
-				stackBuilder.addNextIntent(notificationIntent);
+					PendingIntent resultPendingIntent = PendingIntent
+							.getActivity(MainActivity.this, 0,
+									notificationIntent,
+									PendingIntent.FLAG_UPDATE_CURRENT);
 
-				PendingIntent resultPendingIntent = PendingIntent.getActivity(
-						MainActivity.this, 0, notificationIntent,
-						PendingIntent.FLAG_UPDATE_CURRENT);
+					mBuilder.setContentIntent(resultPendingIntent);
 
-				mBuilder.setContentIntent(resultPendingIntent);
-				NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+					mNotificationManager.notify(notifyID, mBuilder.build());
 
-				mNotificationManager.notify(notifyID, mBuilder.build());
-				
-				// Get instance of Vibrator from current Context
-				Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-				v.vibrate(500);
+					// Get instance of Vibrator from current Context
+					Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+					v.vibrate(500);
 
-				Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-				Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-				r.play();
-			}
-		}.start();
+					Uri notification = RingtoneManager
+							.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+					Ringtone r = RingtoneManager.getRingtone(
+							getApplicationContext(), notification);
+					r.play();
+				}
+			}.start();
+		}
 
 	}
 
@@ -369,5 +368,28 @@ public class MainActivity extends Activity {
 			// Orange
 			return Color.rgb(255, 127, 0);
 		}
+	}
+
+	private Intent getNotificationIntent(boolean addValues) {
+		Intent notificationIntent = new Intent(MainActivity.this,
+				MainActivity.class);
+		notificationIntent.removeExtra("intCurrentMinutes");
+		notificationIntent.removeExtra("intCurrentSeconds");
+		notificationIntent.removeExtra("red");
+		notificationIntent.removeExtra("green");
+		notificationIntent.removeExtra("blue");
+		notificationIntent.removeExtra("isRunning");
+		if (addValues) {
+			notificationIntent.putExtra("intCurrentMinutes", intCurrentMinutes);
+			notificationIntent.putExtra("intCurrentSeconds", intCurrentSeconds);
+			notificationIntent.putExtra("red", red);
+			notificationIntent.putExtra("green", green);
+			notificationIntent.putExtra("blue", blue);
+			notificationIntent.putExtra("isRunning", isRunning);
+		}
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+		return notificationIntent;
 	}
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">جزء التحكم</string>
+    <string name="menu_settings">إعدادات</string>
+    <string name="finishedEating">الانتهاء من الأكل?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">ليس الآن لونغ!</string>
+    <string name="minute_17">استمروا في العمل الجيد!</string>
+    <string name="minute_15">بقي 15 دقيقة</string>
+    <string name="minute_13">ممتاز الوظيفي!</string>
+    <string name="minute_11">11 دقيقة من</string>
+    <string name="minute_09">فإنه سيتم سداد قريبا!</string>
+    <string name="minute_07">العمل الصالح!</string>
+    <string name="minute_05">بقي من 5 دقائق</string>
+    <string name="minute_03">لا تتوقف الآن!</string>
+    <string name="minute_01">هناك ما يقرب من!</string>
+    <string name="finished">منتهي!</string>
+    <string name="goAgain">يذهب مرة أخرى?</string>
+    
+
+</resources>

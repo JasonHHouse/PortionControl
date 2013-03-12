@@ -2,19 +2,18 @@
 <resources>
 
     <string name="app_name">Portion Control</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="finishedEating">Finished Eating?</string>
     <string name="timeZero">00:00</string>
     <string name="_blank"></string>
     <string name="minute_19">Not Long Now!</string>
     <string name="minute_17">Keep up the Good Work!</string>
-    <string name="minute_15">Under 15 Minutes Left</string>
+    <string name="minute_15">15 Minutes Left</string>
     <string name="minute_13">Excellent Job!</string>
-    <string name="minute_11">Under 11 Minutes Left</string>
+    <string name="minute_11">11 Minutes Left</string>
     <string name="minute_09">It\'ll pay off Soon!</string>
     <string name="minute_07">Good Work!</string>
-    <string name="minute_05">Under 5 Minutes Left</string>
+    <string name="minute_05">5 Minutes Left</string>
     <string name="minute_03">Don\'t Stop Now!</string>
     <string name="minute_01">Almost There!</string>
     <string name="finished">Finished!</string>

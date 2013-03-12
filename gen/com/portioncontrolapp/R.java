@@ -26,24 +26,23 @@ public final class R {
         public static final int activity_main=0x7f060000;
     }
     public static final class string {
-        public static final int _blank=0x7f040005;
+        public static final int _blank=0x7f040004;
         public static final int app_name=0x7f040000;
-        public static final int finished=0x7f040010;
-        public static final int finishedEating=0x7f040003;
-        public static final int goAgain=0x7f040011;
-        public static final int hello_world=0x7f040001;
-        public static final int menu_settings=0x7f040002;
-        public static final int minute_01=0x7f04000f;
-        public static final int minute_03=0x7f04000e;
-        public static final int minute_05=0x7f04000d;
-        public static final int minute_07=0x7f04000c;
-        public static final int minute_09=0x7f04000b;
-        public static final int minute_11=0x7f04000a;
-        public static final int minute_13=0x7f040009;
-        public static final int minute_15=0x7f040008;
-        public static final int minute_17=0x7f040007;
-        public static final int minute_19=0x7f040006;
-        public static final int timeZero=0x7f040004;
+        public static final int finished=0x7f04000f;
+        public static final int finishedEating=0x7f040002;
+        public static final int goAgain=0x7f040010;
+        public static final int menu_settings=0x7f040001;
+        public static final int minute_01=0x7f04000e;
+        public static final int minute_03=0x7f04000d;
+        public static final int minute_05=0x7f04000c;
+        public static final int minute_07=0x7f04000b;
+        public static final int minute_09=0x7f04000a;
+        public static final int minute_11=0x7f040009;
+        public static final int minute_13=0x7f040008;
+        public static final int minute_15=0x7f040007;
+        public static final int minute_17=0x7f040006;
+        public static final int minute_19=0x7f040005;
+        public static final int timeZero=0x7f040003;
     }
     public static final class style {
         /** 

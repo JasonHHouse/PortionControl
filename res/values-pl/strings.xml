@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Część Kontroli</string>
+    <string name="menu_settings">Ustawienia</string>
+    <string name="finishedEating">Zakończył Gastronomia?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">Nie Długo Teraz!</string>
+    <string name="minute_17">Zachowaj Dobrą Pracę!</string>
+    <string name="minute_15">15 minut przed</string>
+    <string name="minute_13">Doskonała Praca!</string>
+    <string name="minute_11">11 minut przed</string>
+    <string name="minute_09">To będzie spłacić szybko!</string>
+    <string name="minute_07">Dobra robota!</string>
+    <string name="minute_05">5 minut przed</string>
+    <string name="minute_03">Nie przestawaj teraz!</string>
+    <string name="minute_01">prawie tam!</string>
+    <string name="finished">gotowy!</string>
+    <string name="goAgain">znowu?</string>
+    
+
+</resources>

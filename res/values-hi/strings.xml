@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">भाग नियंत्रण</string>
+    <string name="menu_settings">सेटिंग्स</string>
+    <string name="finishedEating">भोजन तैयार?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">अब लंबे समय तक नहीं!</string>
+    <string name="minute_17">अच्छा काम करते रहो!</string>
+    <string name="minute_15">15 मिनट छोड़ दिया</string>
+    <string name="minute_13">बहुत अच्छा काम!</string>
+    <string name="minute_11">11 मिनट बचे</string>
+    <string name="minute_09">यह जल्द ही भुगतान करेंगे!</string>
+    <string name="minute_07">अच्छा काम!</string>
+    <string name="minute_05">5 मिनट छोड़ दिया</string>
+    <string name="minute_03">अब रोक नहीं!</string>
+    <string name="minute_01">लगभग वहाँ!</string>
+    <string name="finished">समाप्त!</string>
+    <string name="goAgain">फिर जाओ?</string>
+    
+
+</resources>

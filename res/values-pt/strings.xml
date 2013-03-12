@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Controle da Parcela</string>
+    <string name="menu_settings">Configurações</string>
+    <string name="finishedEating">Terminou de Comer?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">Não muito tempo agora!</string>
+    <string name="minute_17">Mantenha o bom trabalho!</string>
+    <string name="minute_15">15 Minutos Esquerda</string>
+    <string name="minute_13">excelente trabalho!</string>
+    <string name="minute_11">11 minutos restantes</string>
+    <string name="minute_09">Ele vai pagar Logo!</string>
+    <string name="minute_07">bom trabalho!</string>
+    <string name="minute_05">5 Minutos Esquerda</string>
+    <string name="minute_03">Não pare agora!</string>
+    <string name="minute_01">quase Lá!</string>
+    <string name="finished">acabado!</string>
+    <string name="goAgain">Ir Novamente?</string>
+    
+
+</resources>

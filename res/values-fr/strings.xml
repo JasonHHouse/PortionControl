@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Le Contrôle des Portions</string>
+    <string name="menu_settings">Réglages</string>
+    <string name="finishedEating">Fini de Manger?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">Peu de temps Maintenant!</string>
+    <string name="minute_17">Continuez votre bon Travail!</string>
+    <string name="minute_15">15 Minutes à Gauche</string>
+    <string name="minute_13">Excellent Travail!</string>
+    <string name="minute_11">11 Minutes à Gauche</string>
+    <string name="minute_09">Il va payer Bientôt!</string>
+    <string name="minute_07">Bon Travail!</string>
+    <string name="minute_05">5 Minutes à Gauche</string>
+    <string name="minute_03">Ne vous Arrêtez pas!</string>
+    <string name="minute_01">Y est Presque!</string>
+    <string name="finished">Fini!</string>
+    <string name="goAgain">Recommencer?</string>
+    
+
+</resources>

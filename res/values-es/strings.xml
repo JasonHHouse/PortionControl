@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Parte de Control</string>
+    <string name="menu_settings">Configuración</string>
+    <string name="finishedEating">¿Hecho Comer?</string>
+    <string name="timeZero">00:00</string>
+    <string name="_blank"></string>
+    <string name="minute_19">¡No pasó Mucho Tiempo Ahora!</string>
+    <string name="minute_17">¡Sigan con el Buen Trabajo!</string>
+    <string name="minute_15">15 Minutos que Quedan</string>
+    <string name="minute_13">¡Excelente Esfuerzo!</string>
+    <string name="minute_11">11 Minutos que Quedan</string>
+    <string name="minute_09">¡Va a Pagar Pronto!</string>
+    <string name="minute_07">¡Trabajo Bueno!</string>
+    <string name="minute_05">5 Minutos que Quedan</string>
+    <string name="minute_03">¡No te Detengas Ahora!</string>
+    <string name="minute_01">¡Casi hay!</string>
+    <string name="finished">¡Acabado!</string>
+    <string name="goAgain">¿Ir de Nuevo?</string>
+    
+
+</resources>
