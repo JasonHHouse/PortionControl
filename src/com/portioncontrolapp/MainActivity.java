@@ -61,22 +61,67 @@ public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
 	private static final int START_MINUTES = 0;
-	private static final int START_SECONDS = 30;
+	private static final int START_SECONDS = 10;
 
-	private double red;
-	private double green;
-	private double blue;
-	private int rotation;
-	private int color;
-	private int size;
-	private int notifyID = 1;
-	private int intCurrentMinutes;
-	private int intCurrentSeconds;
 	private NotificationManager mNotificationManager;
 	private ResponseReceiver receiver;
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG, "onCreate()");
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
+		filter.addCategory(Intent.CATEGORY_DEFAULT);
+		receiver = new ResponseReceiver();
+		registerReceiver(receiver, filter);
+
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		Log.d(TAG, "onSaveInstanceState()");
+		// savedInstanceState.putDouble("red", red);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		Log.d(TAG, "onRestoreInstanceState()");
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		// getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+
+	public void onClick_finishedEating(View view) {
+		Log.d(TAG, "onClick_finishedEating()");
+
+		Intent msgIntent = new Intent(this, TimerService.class);
+		msgIntent.putExtra(TimerService.INT_CURRENT_MINUTES, START_MINUTES);
+		msgIntent.putExtra(TimerService.INT_CURRENT_SECONDS, START_SECONDS);
+		startService(msgIntent);
+
+	}
+
 	public class ResponseReceiver extends BroadcastReceiver {
 		public static final String ACTION_RESP = "com.mamlambo.intent.action.MESSAGE_PROCESSED";
+
+		private double red;
+		private double green;
+		private double blue;
+		private int rotation;
+		private int color;
+		private int size;
+		private int notifyID = 1;
+		private int intCurrentMinutes;
+		private int intCurrentSeconds;
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -96,8 +141,10 @@ public class MainActivity extends Activity {
 				onUpdate();
 			}
 
-			Log.i(TAG, "Time: " + createOutput(intCurrentMinutes, intCurrentSeconds) + ", RGB: " + red + ", " + green
-					+ ", " + blue);
+			// Log.i(TAG,
+			// "Time: "
+			// + createOutput(intCurrentMinutes, intCurrentSeconds)
+			// + ", RGB: " + red + ", " + green + ", " + blue);
 
 		}
 
@@ -116,7 +163,7 @@ public class MainActivity extends Activity {
 
 			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
 					.setSmallIcon(R.drawable.ic_launcher).setContentTitle("Time left")
-					.setContentText(createOutput(intCurrentMinutes, intCurrentSeconds));
+					.setContentText(createOutput(intCurrentMinutes, intCurrentSeconds)).setOngoing(true);
 
 			Intent notificationIntent = getNotificationIntent(true);
 
@@ -170,104 +217,105 @@ public class MainActivity extends Activity {
 
 			// Get instance of Vibrator from current Context
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-			v.vibrate(500);
+			v.vibrate(new long[] { 100, 200, 100, 500, 100, 200, 100, 500, 100, 200, 100, 500 }, -1);
 
 			Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 			Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
 			r.play();
 		}
-	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate()");
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		private Intent getNotificationIntent(boolean addValues) {
+			Intent notificationIntent = new Intent(MainActivity.this, MainActivity.class);
+			notificationIntent.removeExtra("intCurrentMinutes");
+			notificationIntent.removeExtra("intCurrentSeconds");
+			notificationIntent.removeExtra("red");
+			notificationIntent.removeExtra("green");
+			notificationIntent.removeExtra("blue");
+			notificationIntent.removeExtra("isRunning");
+			if (addValues) {
+				notificationIntent.putExtra("intCurrentMinutes", intCurrentMinutes);
+				notificationIntent.putExtra("intCurrentSeconds", intCurrentSeconds);
+				notificationIntent.putExtra("red", red);
+				notificationIntent.putExtra("green", green);
+				notificationIntent.putExtra("blue", blue);
+			}
+			notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-		IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
-		filter.addCategory(Intent.CATEGORY_DEFAULT);
-		receiver = new ResponseReceiver();
-		registerReceiver(receiver, filter);
-
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);
-		Log.d(TAG, "onSaveInstanceState()");
-		// savedInstanceState.putDouble("red", red);
-	}
-
-	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		Log.d(TAG, "onRestoreInstanceState()");
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		// getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
-	}
-
-	public void onClick_finishedEating(View view) {
-		Log.d(TAG, "onClick_finishedEating()");
-
-		Intent msgIntent = new Intent(this, TimerService.class);
-		msgIntent.putExtra(TimerService.INT_CURRENT_MINUTES, START_MINUTES);
-		msgIntent.putExtra(TimerService.INT_CURRENT_SECONDS, START_SECONDS);
-		startService(msgIntent);
-
-	}
-
-	private void setNotificationText(TextView reinforcements) {
-		switch (intCurrentMinutes) {
-		case 20:
-		case 19:
-		case 18:
-			reinforcements.setText(R.string.minute_19);
-			break;
-		case 17:
-		case 16:
-			reinforcements.setText(R.string.minute_17);
-			break;
-		case 15:
-		case 14:
-			reinforcements.setText(R.string.minute_15);
-			break;
-		case 13:
-		case 12:
-			reinforcements.setText(R.string.minute_13);
-			break;
-		case 11:
-		case 10:
-			reinforcements.setText(R.string.minute_11);
-			break;
-		case 9:
-		case 8:
-			reinforcements.setText(R.string.minute_09);
-			break;
-		case 7:
-		case 6:
-			reinforcements.setText(R.string.minute_07);
-			break;
-		case 5:
-		case 4:
-			reinforcements.setText(R.string.minute_05);
-			break;
-		case 3:
-		case 2:
-			reinforcements.setText(R.string.minute_03);
-			break;
-		case 1:
-		case 0:
-			reinforcements.setText(R.string.minute_01);
-			break;
+			return notificationIntent;
 		}
 
+		private int getColor(int rand) {
+			switch (rand) {
+			case 0:
+				return Color.BLACK;
+			case 1:
+				return Color.BLUE;
+			case 2:
+				return Color.CYAN;
+			case 3:
+				return Color.DKGRAY;
+			case 4:
+				return Color.GRAY;
+			case 5:
+				return Color.GREEN;
+			case 6:
+				return Color.LTGRAY;
+			case 7:
+				return Color.MAGENTA;
+			case 9:
+				return Color.RED;
+			default:
+				// Orange
+				return Color.rgb(255, 127, 0);
+			}
+		}
+
+		private void setNotificationText(TextView reinforcements) {
+			switch (intCurrentMinutes) {
+			case 20:
+			case 19:
+			case 18:
+				reinforcements.setText(R.string.minute_19);
+				break;
+			case 17:
+			case 16:
+				reinforcements.setText(R.string.minute_17);
+				break;
+			case 15:
+			case 14:
+				reinforcements.setText(R.string.minute_15);
+				break;
+			case 13:
+			case 12:
+				reinforcements.setText(R.string.minute_13);
+				break;
+			case 11:
+			case 10:
+				reinforcements.setText(R.string.minute_11);
+				break;
+			case 9:
+			case 8:
+				reinforcements.setText(R.string.minute_09);
+				break;
+			case 7:
+			case 6:
+				reinforcements.setText(R.string.minute_07);
+				break;
+			case 5:
+			case 4:
+				reinforcements.setText(R.string.minute_05);
+				break;
+			case 3:
+			case 2:
+				reinforcements.setText(R.string.minute_03);
+				break;
+			case 1:
+			case 0:
+				reinforcements.setText(R.string.minute_01);
+				break;
+			}
+
+		}
 	}
 
 	public static String createOutput(int minutes, int seconds) {
@@ -275,49 +323,4 @@ public class MainActivity extends Activity {
 		return nft.format(minutes) + ":" + nft.format(seconds);
 	}
 
-	private int getColor(int rand) {
-		switch (rand) {
-		case 0:
-			return Color.BLACK;
-		case 1:
-			return Color.BLUE;
-		case 2:
-			return Color.CYAN;
-		case 3:
-			return Color.DKGRAY;
-		case 4:
-			return Color.GRAY;
-		case 5:
-			return Color.GREEN;
-		case 6:
-			return Color.LTGRAY;
-		case 7:
-			return Color.MAGENTA;
-		case 9:
-			return Color.RED;
-		default:
-			// Orange
-			return Color.rgb(255, 127, 0);
-		}
-	}
-
-	private Intent getNotificationIntent(boolean addValues) {
-		Intent notificationIntent = new Intent(MainActivity.this, MainActivity.class);
-		notificationIntent.removeExtra("intCurrentMinutes");
-		notificationIntent.removeExtra("intCurrentSeconds");
-		notificationIntent.removeExtra("red");
-		notificationIntent.removeExtra("green");
-		notificationIntent.removeExtra("blue");
-		notificationIntent.removeExtra("isRunning");
-		if (addValues) {
-			notificationIntent.putExtra("intCurrentMinutes", intCurrentMinutes);
-			notificationIntent.putExtra("intCurrentSeconds", intCurrentSeconds);
-			notificationIntent.putExtra("red", red);
-			notificationIntent.putExtra("green", green);
-			notificationIntent.putExtra("blue", blue);
-		}
-		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-		return notificationIntent;
-	}
 }
