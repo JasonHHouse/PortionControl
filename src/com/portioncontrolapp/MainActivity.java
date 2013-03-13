@@ -60,8 +60,8 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
-	private static final int START_MINUTES = 0;
-	private static final int START_SECONDS = 10;
+	private static final int START_MINUTES = 20;
+	private static final int START_SECONDS = 0;
 
 	private NotificationManager mNotificationManager;
 	private ResponseReceiver receiver;
